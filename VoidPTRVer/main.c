@@ -1,5 +1,8 @@
+#include "stack.h"
+
+
 #include <stdio.h>
-#include "vectorPTR.h"
+
 #define INT *(int *)
 
 
@@ -22,17 +25,8 @@ int DoubleIsGreater(const void *left, const void *right)
 {
     return (double)*(double *)left > (double)*(double *)right;
 }
-
 int main()
 {
-    vector  a = VecCreate(sizeof(vector));
-    vector b = VecCreate(sizeof(int));
-    VecPushBack(&a, &b);
-    int c = 6;
-    VecPushBack(VecGet(&a,0), &c);
-    VecTraverse(&a, VecDestruct);
-    VecDestruct(&a);
-    
 
-    
+
 }

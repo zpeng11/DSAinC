@@ -1,1 +1,4 @@
 .vscode/
+**/*.exe
+**/build/
+**/CMakeCache.txt

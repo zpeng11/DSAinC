@@ -1,4 +1,4 @@
-#include "vectorPTR.h"
+#include "vector.h"
 
 vector VecCreate(int DataSize)
 {

@@ -155,13 +155,14 @@ int ListInsertAfter(list *_list, int position, const void *input_ptr)
     return _list->_size;
 }
 
-int ListRemove(list *_list, int position)
+const void * ListRemove(list *_list, int position)
 {
     ListNode *ptr = NodeGet(_list, position);
+    memcpy(_list->tailer->_data,ptr->_data,_list->_DataSize );
     NodeDecouple(ptr);
     NodeDestruct(ptr);
     _list->_size -= 1;
-    return _list->_size;
+    return  _list->tailer->_data;
 }
 
 void ListMove(list *_list, int Dst, int Src)

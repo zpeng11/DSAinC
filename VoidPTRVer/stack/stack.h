@@ -5,12 +5,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "../vector/vectorPTR.h"
+#include "vector.h"
 
-#define stack vector
+typedef struct stack
+{
+    struct vector _vector;
+}stack;
 
-
-stack * StackCreate(int DataSize);
+stack StackCreate(int DataSize);
 int StackSize(stack * _stack);
 int StackPush(stack * _stack, const void * input_ptr);
 const void * StackPop(stack * _stack);
