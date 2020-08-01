@@ -1,5 +1,14 @@
 #include "list.h"
 
+ListNode *NodeCreate(int DataSize);
+ListNode *NodeCreateWithPtr(int DataSize, const void *input_ptr);
+ListNode *NodeGet(list *_list, int position);
+void NodeInsertBefore(ListNode *old, ListNode *new);
+void NodeInsertAfter(ListNode *old, ListNode *new);
+void NodeDecouple(ListNode *node);
+void NodeMoveBefore(ListNode *Dst, ListNode *Src);
+void NodeDestruct(ListNode *_ListNode);
+//node opertations
 ListNode *NodeCreate(int DataSize)
 {
     ListNode *ptr = (ListNode *)malloc(sizeof(ListNode));
@@ -17,12 +26,73 @@ ListNode *NodeCreateWithPtr(int DataSize, const void *input_ptr)
     return ptr;
 }
 
+ListNode *NodeGet(list *_list, int position)
+{
+    if (!(0 <= position && position < _list->_size))
+    {
+        return NULL;
+    }
+    ListNode *ptr;
+    if (position > (_list->_size >> 1))
+    {
+        ptr = _list->tailer->pred;
+        for (int i = _list->_size - 1; position < i; i--)
+        {
+            ptr = ptr->pred;
+        }
+    }
+    else
+    {
+        ptr = _list->header->succ;
+        for (int i = 0; i < position; i++)
+        {
+            ptr = ptr->succ;
+        }
+    }
+    return ptr;
+}
+
+void NodeInsertBefore(ListNode *old, ListNode *new)
+{
+    new->pred = old->pred;
+    new->succ = old;
+    old->pred->succ = new;
+    old->pred = new;
+}
+
+void NodeInsertAfter(ListNode *old, ListNode *new)
+{
+    new->pred = old;
+    new->succ = old->succ;
+    old->succ->pred = new;
+    old->succ = new;
+}
+
+void NodeDecouple(ListNode *node)
+{
+    if (node->pred)
+    {
+        node->pred->succ = node->succ;
+    }
+    if (node->succ)
+    {
+        node->succ->pred = node->pred;
+    }
+}
+
+void NodeMoveBefore(ListNode *Dst, ListNode *Src)
+{
+    NodeDecouple(Src);
+    NodeInsertBefore(Dst, Src);
+}
+
 void NodeDestruct(ListNode *_ListNode)
 {
     free(_ListNode->_data);
     free(_ListNode);
 }
 
+//list operations
 list ListCreate(int DataSize)
 {
     list new = {._DataSize = DataSize, ._size = 0};
@@ -53,22 +123,6 @@ int ListSize(list *_list)
     return _list->_size;
 }
 
-static void NodeInsertBefore(ListNode *old, ListNode *new)
-{
-    new->pred = old->pred;
-    new->succ = old;
-    old->pred->succ = new;
-    old->pred = new;
-}
-
-static void NodeInsertAfter(ListNode *old, ListNode *new)
-{
-    new->pred = old;
-    new->succ = old->succ;
-    old->succ->pred = new;
-    old->succ = new;
-}
-
 int ListInsertAsFirst(list *_list, const void *input_ptr)
 {
     ListNode *ptr = NodeCreateWithPtr(_list->_DataSize, input_ptr);
@@ -85,32 +139,6 @@ int ListInsertAsLast(list *_list, const void *input_ptr)
     return _list->_size;
 }
 
-ListNode *NodeGet(list *_list, int position)
-{
-    if (!(0 <= position && position < _list->_size))
-    {
-        return NULL;
-    }
-    ListNode *ptr;
-    if (position > (_list->_size >> 1))
-    {
-        ptr = _list->tailer->pred;
-        for (int i = _list->_size - 1; position < i; i--)
-        {
-            ptr = ptr->pred;
-        }
-    }
-    else
-    {
-        ptr = _list->header->succ;
-        for (int i = 0; i < position; i++)
-        {
-            ptr = ptr->succ;
-        }
-    }
-    return ptr;
-}
-
 int ListInsertBefore(list *_list, int position, const void *input_ptr)
 {
     ListNode *ptr = NodeCreateWithPtr(_list->_DataSize, input_ptr);
@@ -122,60 +150,62 @@ int ListInsertBefore(list *_list, int position, const void *input_ptr)
 int ListInsertAfter(list *_list, int position, const void *input_ptr)
 {
     ListNode *ptr = NodeCreateWithPtr(_list->_DataSize, input_ptr);
-    NodeInsertBefore(NodeGet(_list, position), ptr);
+    NodeInsertAfter(NodeGet(_list, position), ptr);
     _list->_size += 1;
     return _list->_size;
 }
 
-static void NodeDecouple(ListNode *node)
-{
-    if (node->pred)
-    {
-        node->pred->succ = node->succ;
-    }
-    if (node->succ)
-    {
-        node->succ->pred = node->pred;
-    }
-}
-
 int ListRemove(list *_list, int position)
 {
-    ListNode * ptr = NodeGet(_list, position);
-    NodeDecouple(NodeGet(_list, position));
+    ListNode *ptr = NodeGet(_list, position);
+    NodeDecouple(ptr);
     NodeDestruct(ptr);
     _list->_size -= 1;
     return _list->_size;
 }
 
-
 void ListMove(list *_list, int Dst, int Src)
 {
-    ListNode * SourceNode= NodeGet(_list, Src);
-    ListNode * InsertNode = NodeGet(_list, Dst);
+    ListNode *SourceNode = NodeGet(_list, Src);
+    ListNode *InsertNode = NodeGet(_list, Dst);
     NodeDecouple(SourceNode);
-    NodeInsertBefore(InsertNode, SourceNode);
+    if (Dst < Src)
+        NodeInsertBefore(InsertNode, SourceNode);
+    else
+        NodeInsertAfter(InsertNode, SourceNode);
 }
 
+void ListExchange(list *_list, int left, int right)
+{
+    if (left < right)
+    {
+        int temp = left;
+        left = right;
+        right = temp;
+    }
+    ListMove(_list, left, right);
+    ListMove(_list, right, left + 1);
+}
 
 int ListDisorderedOL(list *_list, int (*IsGeater)(const void *, const void *))
 {
-    ListNode * left = _list->header->succ;
-    ListNode * right = left->succ;
+    ListNode *left = _list->header->succ;
+    ListNode *right = left->succ;
     int n = 0;
-    while(right->succ)
+    while (right->succ)
     {
         n += IsGeater(left->_data, right->_data);
+        right = right->succ;
+        left = left->succ;
     }
     return n;
 }
-
 
 int ListFind(list *_list, const void *target)
 {
-    ListNode * ptr = _list->tailer->pred;
-    int n = _list->_size -1;
-    while(ptr->pred && memcmp(ptr->_data, target, _list->_DataSize))
+    ListNode *ptr = _list->tailer->pred;
+    int n = _list->_size - 1;
+    while (ptr->pred && memcmp(ptr->_data, target, _list->_DataSize))
     {
         ptr = ptr->pred;
         n--;
@@ -183,11 +213,11 @@ int ListFind(list *_list, const void *target)
     return n;
 }
 
-int ListFindOL(list *_list, const void *target, int (* IsEqual)(const void *, const void *))
+int ListFindOL(list *_list, const void *target, int (*IsEqual)(const void *, const void *))
 {
-    ListNode * ptr = _list->tailer->pred;
-    int n = _list->_size-1;
-    while (ptr->pred && !IsEqual(ptr->_data, target) )
+    ListNode *ptr = _list->tailer->pred;
+    int n = _list->_size - 1;
+    while (ptr->pred && !IsEqual(ptr->_data, target))
     {
         ptr = ptr->pred;
         n--;
@@ -195,26 +225,19 @@ int ListFindOL(list *_list, const void *target, int (* IsEqual)(const void *, co
     return n;
 }
 
+void ListSortOL(list *_list, int (*IsGreater)(const void *, const void *));
 
-
-void ListSortOL(list *_list, int(* IsGreater)(const void *, const void *));
-
-static void NodeMoveBefore(ListNode * Dst, ListNode * Src)
+void ListInsertSortOL(list *_list, int (*IsGreater)(const void *, const void *))
 {
-    NodeDecouple(Src);
-    NodeInsertBefore(Dst,Src);
-}
-
-void ListInsertSortOL(list *_list, int(* IsGreater)(const void *, const void *))
-{
-    ListNode * left = _list->header->succ;
-    ListNode * right = left->succ;
-    while(right ->succ)
+    ListNode *left = _list->header->succ;
+    ListNode *right = left->succ;
+    while (right->succ)
     {
         left = _list->header->succ;
-        while(left != right)
+        while (left != right)
         {
-            if(IsGreater(left->_data, right->_data)){
+            if (IsGreater(left->_data, right->_data))
+            {
                 right = right->pred;
                 NodeMoveBefore(left, right->succ);
                 break;
@@ -225,6 +248,7 @@ void ListInsertSortOL(list *_list, int(* IsGreater)(const void *, const void *))
     }
 }
 
+/*
 void ListMergeSort(list *_list, int(*IsGreater)(const void * , const void *))
 {
     vector SortVec = VecCreate(_list->_DataSize);
@@ -235,10 +259,49 @@ void ListMergeSort(list *_list, int(*IsGreater)(const void * , const void *))
         temp = temp->succ;
     }
 }
+*/
 
-int ListSearchOL(list *_list, const void *target, int (*IsGreater)(const void *, const void *));
-void ListUniquifyOL(list *_list);
-void ListTraverse(list *_list, void (*callback)(void *));
+void ListUniquifyOL(list *_list, int (*IsEqual)(const void *, const void *))
+{
+    ListNode *left = _list->header->succ;
+    ListNode *right = left->succ;
+    while (right->succ)
+    {
+        if (IsEqual(left->_data, right->_data))
+        {
+            ListNode *temp = right->succ;
+            NodeDecouple(right);
+            NodeDestruct(right);
+            _list->_size -= 1;
+            right = temp;
+        }
+        else
+        {
+            left = right;
+            right = right->succ;
+        }
+    }
+}
 
-void ListExchange(list *_list, int left, int right);
-void ListDestruct(list *_list);
+void ListTraverse(list *_list, void (*callback)(void *))
+{
+    ListNode *ptr = _list->header->succ;
+    while (ptr->succ)
+    {
+        callback(ptr->_data);
+        ptr = ptr->succ;
+    }
+}
+
+void ListDestruct(list *_list)
+{
+    ListNode *ptr = _list->header;
+    while (1)
+    {
+        ListNode *temp = ptr->succ;
+        NodeDestruct(ptr);
+        ptr = temp;
+        if (!ptr)
+            return;
+    }
+}
