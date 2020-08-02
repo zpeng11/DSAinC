@@ -25,8 +25,6 @@ BinNode *BTreeInsertAsRC(BinTree *_BinTree, BinNode *node_2_insert, const void *
     BNodeInsertAsRC(node_2_insert, input, _BinTree->_DataSize);
     BTreeUpdateHeightAbove(node_2_insert);
     return node_2_insert->_rChild;
-    
-    
 }
 
 BinNode *BTreeInsertAsLC(BinTree *_BinTree, BinNode *node_2_insert, const void *input)

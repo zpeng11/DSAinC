@@ -34,7 +34,7 @@ vector VecCreateWithPtr(int DataSize, const void *old_ptr, int size)
     return new;
 }
 
-
+#define VecGet_(vectorPTR,rank)  ((vectorPTR)->_data+(vectorPTR)->_DataSize *(rank))
 
 void *VecGet(const vector *_vector, int rank)
 {
@@ -52,7 +52,7 @@ int VecPutMultiple(vector *_vector, const void *input_ptr, int num_2_put, int st
 {
     if (_vector == NULL || start_rank + num_2_put > _vector->_size - 1 || start_rank < 0)
         return 0;
-    memcpy(VecGet(_vector, start_rank), input_ptr, _vector->_DataSize * num_2_put);
+    memcpy(VecGet_(_vector, start_rank), input_ptr, _vector->_DataSize * num_2_put);
     return _vector->_size;
 }
 
@@ -67,8 +67,8 @@ int VecInsertMultiple(vector *_vector, const void *input_ptr, int num_2_insert, 
         return 0;
     _vector->_size += num_2_insert;
     VecExtend(_vector);
-    memmove(VecGet(_vector, start_rank + num_2_insert), VecGet(_vector, start_rank), _vector->_DataSize * (_vector->_size - start_rank - num_2_insert));
-    memcpy(VecGet(_vector, start_rank), input_ptr, _vector->_DataSize * num_2_insert);
+    memmove(VecGet_(_vector, start_rank + num_2_insert), VecGet_(_vector, start_rank), _vector->_DataSize * (_vector->_size - start_rank - num_2_insert));
+    memcpy(VecGet_(_vector, start_rank), input_ptr, _vector->_DataSize * num_2_insert);
     return _vector->_size;
 }
 
@@ -79,22 +79,22 @@ int VecPushBack(vector *_vector, const void *input_ptr)
 
 int VecRemove(vector *_vector, int rank)
 {
-    memmove(VecGet(_vector, rank), VecGet(_vector, rank + 1), _vector->_DataSize * (_vector->_size - 1 - rank));
+    memmove(VecGet_(_vector, rank), VecGet_(_vector, rank + 1), _vector->_DataSize * (_vector->_size - 1 - rank));
     _vector->_size -= 1;
     return _vector->_size;
 }
 
 const void *VecPopBack(vector *_vector)
 {
-    VecRemove(_vector, _vector->_size - 1);
-    return VecGet(_vector, _vector->_size-1)+_vector->_DataSize;
+    _vector->_size -=1;
+    return VecGet_(_vector, _vector->_size);
 }
 
 int VecRemoveMultiple(vector *_vector, int num_2_remove, int start_rank)
 {
     if (start_rank < 0 || start_rank + num_2_remove > _vector->_size || _vector == NULL)
         return 0;
-    memmove(VecGet(_vector, start_rank), VecGet(_vector, num_2_remove + start_rank), _vector->_DataSize * (_vector->_size - start_rank - num_2_remove));
+    memmove(VecGet_(_vector, start_rank), VecGet_(_vector, num_2_remove + start_rank), _vector->_DataSize * (_vector->_size - start_rank - num_2_remove));
     _vector->_size -= num_2_remove;
     return _vector->_size;
 }
@@ -104,7 +104,7 @@ void VecTraverse(vector *_vector, void (*callback)(void *))
     int i;
     for (i = 0; i < _vector->_size; i++)
     {
-        callback(VecGet(_vector, i));
+        callback(VecGet_(_vector, i));
     }
 }
 
@@ -119,7 +119,7 @@ void VecDestruct(vector *_vector)
 int VecFindBetween(const vector *_vector, const void *target, int start_rank, int end_rank)
 {
     int hi = end_rank - 1;
-    while ((start_rank - 1 < hi) && (memcmp(VecGet(_vector, hi), target, _vector->_DataSize)))
+    while ((start_rank - 1 < hi) && (memcmp(VecGet_(_vector, hi), target, _vector->_DataSize)))
         hi -= 1;
     return hi;
 }
@@ -132,7 +132,7 @@ int VecFind(const vector *_vector, const void *target)
 int VecFindOL(const vector *_vector, const void *target, int (*IsEqual)(const void *, const void *))
 {
     int hi = _vector->_size - 1;
-    while ((-1 < hi) && !IsEqual(target, VecGet(_vector, hi)))
+    while ((-1 < hi) && !IsEqual(target, VecGet_(_vector, hi)))
         hi -= 1;
     return hi;
 }
@@ -142,7 +142,7 @@ int VecDisorderedOL(const vector *_vector, int (*IsGreater)(const void *, const 
     int n = 0;
     for (int i = 1; i < _vector->_size; i++)
     {
-        n += IsGreater(VecGet(_vector, (i - 1)), VecGet(_vector, i));
+        n += IsGreater(VecGet_(_vector, (i - 1)), VecGet_(_vector, i));
     }
     return n;
 }
@@ -156,14 +156,14 @@ void VecSelectionSortOL(vector *_vector, int (*IsGreater)(const void *left, cons
         min = i;
         for (j = i + 1; j < _vector->_size; j++)
         {
-            if (IsGreater(VecGet(_vector, min), VecGet(_vector, j)))
+            if (IsGreater(VecGet_(_vector, min), VecGet_(_vector, j)))
                 min = j;
         }
         if (min != i)
         {
-            memcpy(VecGet(_vector, _vector->_size - 1) + _vector->_DataSize, VecGet(_vector, i), _vector->_DataSize);
-            memcpy(VecGet(_vector, i), VecGet(_vector, min), _vector->_DataSize);
-            memcpy(VecGet(_vector, min), VecGet(_vector, _vector->_size - 1) + _vector->_DataSize, _vector->_DataSize);
+            memcpy(VecGet_(_vector, _vector->_size - 1) + _vector->_DataSize, VecGet_(_vector, i), _vector->_DataSize);
+            memcpy(VecGet_(_vector, i), VecGet_(_vector, min), _vector->_DataSize);
+            memcpy(VecGet_(_vector, min), VecGet_(_vector, _vector->_size - 1) + _vector->_DataSize, _vector->_DataSize);
         }
     }
 }
@@ -173,16 +173,16 @@ static void merge(vector *_vector, int lo, int mi, int hi, int (*IsGreater)(cons
     void *arr__ = malloc(_vector->_DataSize * (hi - lo));
     for (int i = lo, j = mi, k = 0; (i < mi || j < hi);)
     {
-        if (i < mi && (j >= hi || !IsGreater(VecGet(_vector, i), VecGet(_vector, j))))
+        if (i < mi && (j >= hi || !IsGreater(VecGet_(_vector, i), VecGet_(_vector, j))))
         {
-            memcpy((void *)arr__ + _vector->_DataSize * k++, VecGet(_vector, i++), _vector->_DataSize);
+            memcpy((void *)arr__ + _vector->_DataSize * k++, VecGet_(_vector, i++), _vector->_DataSize);
         }
-        if (j < hi && (i >= mi || IsGreater(VecGet(_vector, i), VecGet(_vector, j))))
+        if (j < hi && (i >= mi || IsGreater(VecGet_(_vector, i), VecGet_(_vector, j))))
         {
-            memcpy((void *)arr__ + _vector->_DataSize * k++, VecGet(_vector, j++), _vector->_DataSize);
+            memcpy((void *)arr__ + _vector->_DataSize * k++, VecGet_(_vector, j++), _vector->_DataSize);
         }
     }
-    memcpy(VecGet(_vector, lo), arr__, (hi - lo) * _vector->_DataSize);
+    memcpy(VecGet_(_vector, lo), arr__, (hi - lo) * _vector->_DataSize);
     free(arr__);
 }
 static void VecMergeSort(vector *_vector, int lo, int hi, int (*IsGreater)(const void *, const void *))
@@ -215,7 +215,7 @@ int VecSearchOL(const vector *_vector, const void *target, int (*IsGreater)(cons
     while (lo < hi)
     {
         int mi = (hi + lo) >> 1;
-        if (IsGreater(VecGet(_vector, mi), target))
+        if (IsGreater(VecGet_(_vector, mi), target))
             hi = mi;
         else
             lo = ++mi;

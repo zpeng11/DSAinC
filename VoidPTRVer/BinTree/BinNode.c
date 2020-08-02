@@ -54,24 +54,26 @@ void BNodeTravPreR(BinNode *_BinNode, void (*callback)(void *))
 void BNodeTravPreI(BinNode *_BinNode, void (*callback)(void *))
 {
     stack S = StackCreate(sizeof(BinNode *));
-    BinNode *temp = _BinNode;
-    if (_BinNode)
-        StackPush(&S, &temp);
-    while (!StackEmpty(&S))
+    BinNode *temp = NULL;
+    StackPush(&S, &temp);
+    do
     {
-        _BinNode = BNodePTR StackPop(&S);
         callback(_BinNode->_data);
-        if (_BinNode->_lChild)
-        {
-            temp = _BinNode->_lChild;
-            StackPush(&S, &temp);
-        }
         if (_BinNode->_rChild)
         {
             temp = _BinNode->_rChild;
             StackPush(&S, &temp);
         }
-    }
+        if (_BinNode->_lChild)
+        {
+            _BinNode = _BinNode->_lChild;
+        }
+        else
+        {
+            _BinNode = BNodePTR StackPop(&S);
+        }
+
+    } while (_BinNode);
     StackDestruct(&S);
 }
 
@@ -169,34 +171,36 @@ void BNodeTravPostR(BinNode *_BinNode, void (*callback)(void *))
 void BNodeTravPostI(BinNode *_BinNode, void (*callback)(void *))
 {
     stack S = StackCreate(sizeof(BinNode *));
-    BinNode *temp;
+    stack S2 = StackCreate(sizeof(void *));
+    BinNode *temp = _BinNode;
+    StackPush(&S, &temp);
     while (!StackEmpty(&S))
     {
-        temp = _BinNode;
-        StackPush(&S, &temp);
-        if(_BinNode->_rChild)
+        _BinNode = BNodePTR StackPop(&S);
+        if (_BinNode->_lChild)
+        {
+            temp = _BinNode->_lChild;
+            StackPush(&S, &temp);
+        }
+        if (_BinNode->_rChild)
         {
             temp = _BinNode->_rChild;
             StackPush(&S, &temp);
         }
-        if(_BinNode->_lChild)
-        {
-            _BinNode = _BinNode->_lChild;
-        }
-        else
-        {
-            temp = BNodePTR StackPop(&S);
-            if(temp == _BinNode)
-            {
-                callback(_BinNode->_data);
-                _BinNode = BNodePTR StackPop(&S);
-            }
-            else
-            {
-                _BinNode = temp;
-            }
-        }
-        
+        temp = _BinNode->_data;
+        StackPush(&S2, &temp);
+    }
+    while (!StackEmpty(&S2))
+    {
+        void *ptr = *(void **)StackPop(&S2);
+        callback(ptr);
     }
     StackDestruct(&S);
+    StackDestruct(&S2);
+}
+
+void BNodeDestruct(BinNode *_BinNode)
+{
+    free(_BinNode->_data);
+    free(_BinNode);
 }

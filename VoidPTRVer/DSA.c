@@ -10,14 +10,14 @@
 #define INT *(int *)
 #define DOUBLE *(double *)
 
-int IntIsEqual(const void *left, const void * right)
+int IntIsEqual(const void *left, const void *right)
 {
     return (int)*(int *)left == (int)*(int *)right;
 }
 
 int DoubleIsEqual(const void *left, const void *right)
 {
-    return (double)*(double *) left == (double)*(double *) right;
+    return (double)*(double *)left == (double)*(double *)right;
 }
 
 int IntIsGreater(const void *left, const void *right)
@@ -29,8 +29,24 @@ int DoubleIsGreater(const void *left, const void *right)
 {
     return (double)*(double *)left > (double)*(double *)right;
 }
-#define max(a,b) (((a)>(b))?(a):(b))
+
+void print(void *a)
+{
+    int b = *(int *)a;
+    printf("num is : %i\n", b);
+}
+
 int main()
 {
-    printf("%i", max(1,2));
+    int i = 0;
+    BinNode *root = BNodeCreate(&i, sizeof(int));
+    i = 5;
+    BNodeInsertAsRC(root, &i, sizeof(int));
+    i = -2;
+    BinNode *minus2 = BNodeInsertAsLC(root, &i, sizeof(int));
+    i = -3;
+    BNodeInsertAsLC(minus2, &i, 4);
+    i = -1;
+    BNodeInsertAsRC(minus2, &i, 4);
+    BNodeTravLevelR(root, print);
 }
