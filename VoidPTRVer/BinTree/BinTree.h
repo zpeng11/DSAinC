@@ -4,29 +4,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "BinNode.h"
 
 
-typedef struct BinNode
+
+
+
+typedef struct BinTree
 {
-    struct BinTree * _parent;
-    struct BinTree * _lChild;
-    struct BinTree * _rChild;
-    void * _data;
+    BinNode * _root;
     int _DataSize;
-    int _height;
-    int _npl;
-    int color;
-}BinNode;
+    int _size;
+}BinTree;
 
-int BNodeSize(BinNode *_BinNode);
-int BNodeInsertAsLC(BinNode * old, BinNode * new);
-int BNodeInsertAsRC(BinNode * old, BinNode * new);
-BinNode * BNodeSucc(BinNode * _BinNode);
-void BNodeTravLevel(BinNode * _BinNode, void(*callback)(void *));
-void BNodeTravPre(BinNode * _BinNode, void(*callback)(void *));
-void BNodeTravIn(BinNode * _BinNode, void(*callback)(void *));
-void BNodeTravPost(BinNode * _BinNode, void(*callback)(void *));
-
-
+int BTreeUpdatHeight(BinNode * _BinNode);
+void BTreeUpdateHeightAbove(BinNode *_BinNode);
+#define BTreeSize(BTreePTR) ((BTreePTR)-> _size)
+#define BTreeEmpty(BTreePTR) (!((BTreePTR)->_size))
+#define BTreeRoot(BTreePTR) ((BTreePTR)->_root)
+BinNode * BTreeInsertAsRC(BinTree *_BinTree, BinNode * node_2_insert, const void *);
+BinNode * BTreeInsertAsLC(BinTree *_BinTree, BinNode * node_2_insert, const void *);
 
 #endif /*BINTREE_H*/

@@ -9,14 +9,6 @@ queue QueueCreate(int DataSize)
 }
 
 
-int QueueEmptey(queue * _queue)
-{
-    return !ListSize((list *)_queue);
-}
-int QueueSize(queue * _queue)
-{
-    return ListSize((list *)_queue);
-}
 
 
 int QueueEnqueue(queue *_queue, const void * input)

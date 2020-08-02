@@ -1,2 +1,7 @@
 add_library(BinTree BinTree.c)
+add_library(BinNode BinNode.c)
+target_include_directories(BinNode INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(BinTree INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(BinTree BinNode)
+target_link_libraries(BinNode stack)
+target_link_libraries(BinNode queue)

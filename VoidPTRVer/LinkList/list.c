@@ -12,7 +12,6 @@ void NodeDestruct(ListNode *_ListNode);
 ListNode *NodeCreate(int DataSize)
 {
     ListNode *ptr = (ListNode *)malloc(sizeof(ListNode));
-    ptr->_DataSize = DataSize;
     ptr->pred = NULL;
     ptr->succ = NULL;
     ptr->_data = malloc(DataSize);
@@ -118,10 +117,7 @@ void *ListGet(list *_list, int position)
     return (NodeGet(_list, position))->_data;
 }
 
-int ListSize(list *_list)
-{
-    return _list->_size;
-}
+
 
 int ListInsertAsFirst(list *_list, const void *input_ptr)
 {

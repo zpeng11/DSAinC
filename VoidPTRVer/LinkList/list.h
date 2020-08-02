@@ -8,7 +8,6 @@
 typedef struct ListNode
 {
     void *_data;
-    int _DataSize;
     struct ListNode *pred;
     struct ListNode *succ;
 } ListNode;
@@ -24,7 +23,7 @@ typedef struct list
 list ListCreate(int DataSize);
 list ListCreateWithPtr(int DataSize, const void *input_ptr, int num_2_create);
 void *ListGet(list *_list, int position);
-int ListSize(list *_list);
+#define ListSize(listPTR) ((listPTR)->_size)
 int ListInsertAsFirst(list *_list, const void *input_ptr);
 int ListInsertAsLast(list *_list, const void *input_ptr);
 int ListInsertBefore(list *_list, int position, const void *input_ptr);

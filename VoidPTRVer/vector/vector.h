@@ -41,7 +41,7 @@ typedef struct vector //core structrue
 
 vector VecCreate(int DataSize);
 vector VecCreateWithPtr(int DataSize, const void *old_ptr, int size);
-int VecSize(const vector *_vector);
+#define VecSize(VecPTR) ((VecPTR)->_size)
 void *VecGet(const vector *_vector, int rank);
 
 int VecPut(vector *_vector, const void *input_ptr, int rank);

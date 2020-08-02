@@ -10,8 +10,8 @@ typedef struct  queue
 
 
 queue QueueCreate(int DataSize);
-int QueueEmptey(queue * _queue);
-int QueueSize(queue * _queue);
+#define QueueSize(queuePTR) (((list *)(queuePTR))->_size)
+#define QueueEmpty(queuePTR) (!(((list *)(queuePTR))->_size))
 int QueueEnqueue(queue *_queue, const void * input);
 const void * QueueDequeue(queue *_queue);
 const void * QueueRear(queue *_queue);

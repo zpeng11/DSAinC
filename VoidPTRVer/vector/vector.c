@@ -34,12 +34,7 @@ vector VecCreateWithPtr(int DataSize, const void *old_ptr, int size)
     return new;
 }
 
-int VecSize(const vector *_vector)
-{
-    if (_vector != NULL)
-        return _vector->_size;
-    return 0;
-}
+
 
 void *VecGet(const vector *_vector, int rank)
 {

@@ -1,7 +1,6 @@
 #ifndef STACK_H
 #define STACK_H
 
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -10,16 +9,14 @@
 typedef struct stack
 {
     struct vector _vector;
-}stack;
+} stack;
 
 stack StackCreate(int DataSize);
-int StackSize(stack * _stack);
-int StackPush(stack * _stack, const void * input_ptr);
-const void * StackPop(stack * _stack);
-const void * StackTop(stack * _stack);
-int StackEmpty(stack * _stack);
-void StackDestruct(stack * _stack);
-
-
+#define StackSize(stackPTR) (((vector *)(stackPTR))->_size)
+int StackPush(stack *_stack, const void *input_ptr);
+const void *StackPop(stack *_stack);
+const void *StackTop(stack *_stack);
+#define StackEmpty(stackPTR) (!(((vector *)(stackPTR))->_size))
+void StackDestruct(stack *_stack);
 
 #endif /*STACK_H*/

@@ -15,6 +15,7 @@ list(APPEND libs stack)
 list(APPEND libs queue)
 list(APPEND libs LinkList)
 list(APPEND libs BinTree)
+list(APPEND libs BinNode)
 
 
 add_library(DSAinC DSA.c)

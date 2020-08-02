@@ -2,6 +2,8 @@
 #include "vector.h"
 #include "list.h"
 #include "queue.h"
+#include "BinNode.h"
+#include "BinTree.h"
 
 #include <stdio.h>
 
@@ -27,22 +29,8 @@ int DoubleIsGreater(const void *left, const void *right)
 {
     return (double)*(double *)left > (double)*(double *)right;
 }
+#define max(a,b) (((a)>(b))?(a):(b))
 int main()
 {
-    queue a = QueueCreate(sizeof(int));
-    for (int i = 0; i<1000;i++)
-    {
-        srand(i);
-        int b = rand()%1000;
-        QueueEnqueue(&a, &b);
-    }
-    for(int i = 0; i<1000;i++)
-    {
-        printf("num is: %i\n", INT QueueDequeue(&a));
-    }
-    int i = QueueEmptey(&a);
-    QueueDestruct(&a);
-
-
-
+    printf("%i", max(1,2));
 }
