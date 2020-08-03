@@ -1,5 +1,6 @@
 #include "BST.h"
 #define KeyPtr(nodePTR) ((*(entry *)((nodePTR)->_data)).key)
+#define ENTRY *(entry *)
 
 BinNode *SearchIn(BST *_BST, BinNode *v, const void *KeyTarget)
 {
@@ -47,37 +48,47 @@ BinNode *BSTInseart(BST *_BST, const void *key, const void *value)
         if (_BST->KeyIsGreater(key, KeyPtr(_BST->_hot)))
             temp = BNodeInsertAsRC(_BST->_hot, &NewEntry, sizeof(entry));
         else
-            temp =  BNodeInsertAsLC(_BST->_hot, &NewEntry, sizeof(entry));
+            temp = BNodeInsertAsLC(_BST->_hot, &NewEntry, sizeof(entry));
     }
     BTreeUpdateHeightAbove(temp);
     return temp;
 }
 
-void removeAt(BinNode * x, BinNode * hot)
+BinNode * removeAt(BinNode *x, BinNode **hot)
 {
-    BinNode * w = x;
-    BinNode * succ = NULL;
-    if(!x->_lChild) succ = x = x->_rChild;
-    else if(!x->_rChild) succ = x = x->_lChild;
+    BinNode *w = x;
+    BinNode *succ = NULL;
+    if (!x->_lChild)
+        succ = x = x->_rChild;
+    else if (!x->_rChild)
+        succ = x = x->_lChild;
     else
     {
-        
-        
+        w = BNodeSucc(w);
+        entry temp = ENTRY w->_data;
+        ENTRY w->_data = ENTRY x->_data;
+        ENTRY x->_data = temp;
+        BinNode *u = w->_parent;
+        if (u == x)
+            u->_rChild = succ = w->_rChild;
+        else
+            u->_lChild = succ = w->_rChild;
     }
-    hot = w->_parent;
-    if(succ) succ->_parent = hot;
+     *hot = w->_parent;
+    if (succ)
+        succ->_parent = *hot;
     EntryDestruct(w->_data);
     BNodeDestruct(w);
     return succ;
-    
 }
 
-int BSTRemove(BST * _BST, const void * key)
+int BSTRemove(BST *_BST, const void *key)
 {
-    BinNode * node_2_remove = BSTSearch(_BST, key);
-    if(!node_2_remove) return 0;
-    removeAt(node_2_remove, _BST->_hot);
-    _BST->_BinTree._size -=1;
+    BinNode *node_2_remove = BSTSearch(_BST, key);
+    if (!node_2_remove)
+        return 0;
+    removeAt(node_2_remove, &(_BST->_hot));
+    _BST->_BinTree._size -= 1;
     BTreeUpdateHeightAbove(_BST->_hot);
     return 1;
 }
