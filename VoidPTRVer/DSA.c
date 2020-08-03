@@ -4,6 +4,7 @@
 #include "queue.h"
 #include "BinNode.h"
 #include "BinTree.h"
+#include "BST.h"
 
 #include <stdio.h>
 
@@ -35,19 +36,34 @@ void print(void *a)
     int b = *(int *)  (*(BinNode **)a)->_data;
     printf("num is : %i\n", b);
 }
-
+#define Key(nodePTR) *(int *)((*(entry *)((nodePTR)->_data)).key) 
 int main()
 {
-    int i = 0;
-    BinNode *root = BNodeCreate(&i, sizeof(int));
-    i = 5;
-    BNodeInsertAsRC(root, &i, sizeof(int));
-    i = -2;
-    BinNode *minus2 = BNodeInsertAsLC(root, &i, sizeof(int));
-    i = -3;
-    BNodeInsertAsLC(minus2, &i, 4);
-    i = -1;
-    BNodeInsertAsRC(minus2, &i, 4);
-    vector V = BNodeLinVect(root);
-    VecTraverse(&V, print);
+    BST b = BSTCreate(sizeof(int), sizeof(double), IntIsEqual, IntIsGreater);
+    int k = 0;
+    double v = 34.73352;
+    BSTInseart(&b, &k, &v);
+    k = -1;
+    BSTInseart(&b, &k, &v);
+    k = 5;
+    BSTInseart(&b, &k, &v);
+    k = -3;
+    BSTInseart(&b, &k, &v);
+    k = 3;
+    BSTInseart(&b, &k, &v);
+    k = 7;
+    BSTInseart(&b, &k, &v);
+    k = -8;
+    BSTInseart(&b, &k, &v);
+    k = -9;
+    BSTInseart(&b, &k, &v);
+    k = -5;
+    BSTInseart(&b, &k, &v);
+    k = -4;
+    BSTInseart(&b, &k, &v);
+    k = -1;
+    BSTRemove(&b, &k);
+
+
+
 }

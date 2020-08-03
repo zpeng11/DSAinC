@@ -2,6 +2,19 @@
 #define KeyPtr(nodePTR) ((*(entry *)((nodePTR)->_data)).key)
 #define ENTRY *(entry *)
 
+BST BSTCreate(int KeyDataSize, int ValueDataSize, int (* KetIsEqual)(const void *, const void *),int (* KeyIsGreater)(const void * ,const void *) )
+{
+    BST new = {.KetIsEqual= KetIsEqual,
+               .KeyIsGreater = KeyIsGreater,
+               ._hot = NULL,
+               ._KeyDataSize = KeyDataSize,
+               ._ValueDataSize = ValueDataSize,
+               ._BinTree._DataSize = sizeof(entry),
+               ._BinTree._root = NULL,
+               ._BinTree._size = 0 };
+    return new;
+}
+
 BinNode *SearchIn(BST *_BST, BinNode *v, const void *KeyTarget)
 {
     if (!v || _BST->KetIsEqual(KeyTarget, KeyPtr(v)))
@@ -58,10 +71,14 @@ BinNode * removeAt(BinNode *x, BinNode **hot)
 {
     BinNode *w = x;
     BinNode *succ = NULL;
-    if (!x->_lChild)
+    if (!x->_lChild){
         succ = x = x->_rChild;
-    else if (!x->_rChild)
+        w->_parent->_rChild = succ;
+    }
+    else if (!x->_rChild){
         succ = x = x->_lChild;
+        w->_parent->_lChild = succ;
+    }
     else
     {
         w = BNodeSucc(w);
