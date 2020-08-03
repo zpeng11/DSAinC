@@ -6,6 +6,7 @@
 #include <string.h>
 #include "stack.h"
 #include "queue.h"
+#include "vector.h"
 
 typedef struct BinNode
 {
@@ -34,7 +35,9 @@ void BNodeTravInR(BinNode *_BinNode, void (*callback)(void *));
 void BNodeTravInI(BinNode *_BinNode, void (*callback)(void *));
 void BNodeTravPostR(BinNode *_BinNode, void (*callback)(void *));
 void BNodeTravPostI(BinNode *_BinNode, void (*callback)(void *));
+vector BNodeLinVect(BinNode * _BinNode);
 
 void BNodeDestruct(BinNode *_BinNode);
+void BNodeDestructAll(BinNode *_BinNode);
 
 #endif /*BINNODE_h*/

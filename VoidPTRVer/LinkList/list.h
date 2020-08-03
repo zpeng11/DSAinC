@@ -18,10 +18,12 @@ typedef struct list
     ListNode *tailer;
     int _size;
     int _DataSize;
+    int (*IsEqual)(const void *, const void *);
+    int (*IsGreater)(const void *, const void *);
 } list;
 
-list ListCreate(int DataSize);
-list ListCreateWithPtr(int DataSize, const void *input_ptr, int num_2_create);
+list ListCreate(int DataSize, int (*IsEqual)(const void *, const void *), int (*IsGreater)(const void *, const void *));
+list ListCreateWithPtr(int DataSize, const void *input_ptr, int num_2_create, int (*IsEqual)(const void *, const void *), int (*IsGreater)(const void *, const void *));
 void *ListGet(list *_list, int position);
 #define ListSize(listPTR) ((listPTR)->_size)
 int ListInsertAsFirst(list *_list, const void *input_ptr);
@@ -29,12 +31,14 @@ int ListInsertAsLast(list *_list, const void *input_ptr);
 int ListInsertBefore(list *_list, int position, const void *input_ptr);
 int ListInsertAfter(list *_list, int position, const void *input_ptr);
 const void * ListRemove(list *_list, int position);
-int ListDisorderedOL(list *_list, int (*IsGeater)(const void *, const void *));
 int ListFind(list *_list, const void *target);
-int ListFindOL(list *_list, const void *target, int (*IsEqual)(const void *, const void *));
-void ListSortOL(list *_list, int(IsGreater)(const void *, const void *));
-void ListInsertSortOL(list *_list, int (*IsGreater)(const void *, const void *));
-void ListUniquifyOL(list *_list, int (*IsEqual)(const void *, const void *));
+
+int ListDisorderedOL(list *_list);
+int ListFindOL(list *_list, const void *target);
+void ListSortOL(list *_list);
+void ListInsertSortOL(list *_list);
+void ListUniquifyOL(list *_list);
+
 void ListTraverse(list *_list, void (*callback)(void *));
 void ListMove(list *_list, int Dst, int Src);
 void ListExchange(list *_list, int left, int right);

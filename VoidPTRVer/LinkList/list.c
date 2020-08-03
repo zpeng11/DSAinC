@@ -92,9 +92,9 @@ void NodeDestruct(ListNode *_ListNode)
 }
 
 //list operations
-list ListCreate(int DataSize)
+list ListCreate(int DataSize, int (*IsEqual)(const void *, const void *), int (*IsGreater)(const void *, const void *))
 {
-    list new = {._DataSize = DataSize, ._size = 0};
+    list new = {._DataSize = DataSize, ._size = 0, .IsEqual = IsEqual, .IsGreater = IsGreater};
     new.header = NodeCreate(DataSize);
     new.tailer = NodeCreate(DataSize);
     new.header->succ = new.tailer;
@@ -102,9 +102,9 @@ list ListCreate(int DataSize)
     return new;
 }
 
-list ListCreateWithPtr(int DataSize, const void *input_ptr, int num_2_create)
+list ListCreateWithPtr(int DataSize, const void *input_ptr, int num_2_create, int (*IsEqual)(const void *, const void *), int (*IsGreater)(const void *, const void *))
 {
-    list new = ListCreate(DataSize);
+    list new = ListCreate(DataSize, IsEqual, IsGreater);
     for (int i = 0; i < num_2_create; i++)
     {
         ListInsertAsLast(&new, input_ptr + new._DataSize *i);
@@ -184,14 +184,14 @@ void ListExchange(list *_list, int left, int right)
     ListMove(_list, right, left + 1);
 }
 
-int ListDisorderedOL(list *_list, int (*IsGeater)(const void *, const void *))
+int ListDisorderedOL(list *_list)
 {
     ListNode *left = _list->header->succ;
     ListNode *right = left->succ;
     int n = 0;
     while (right->succ)
     {
-        n += IsGeater(left->_data, right->_data);
+        n += _list->IsGreater(left->_data, right->_data);
         right = right->succ;
         left = left->succ;
     }
@@ -210,11 +210,11 @@ int ListFind(list *_list, const void *target)
     return n;
 }
 
-int ListFindOL(list *_list, const void *target, int (*IsEqual)(const void *, const void *))
+int ListFindOL(list *_list, const void *target)
 {
     ListNode *ptr = _list->tailer->pred;
     int n = _list->_size - 1;
-    while (ptr->pred && !IsEqual(ptr->_data, target))
+    while (ptr->pred && !_list->IsEqual(ptr->_data, target))
     {
         ptr = ptr->pred;
         n--;
@@ -222,9 +222,12 @@ int ListFindOL(list *_list, const void *target, int (*IsEqual)(const void *, con
     return n;
 }
 
-void ListSortOL(list *_list, int (*IsGreater)(const void *, const void *));
+void ListSortOL(list *_list)
+{
+    ListInsertSortOL(_list);
+}
 
-void ListInsertSortOL(list *_list, int (*IsGreater)(const void *, const void *))
+void ListInsertSortOL(list *_list)
 {
     ListNode *left = _list->header->succ;
     ListNode *right = left->succ;
@@ -233,7 +236,7 @@ void ListInsertSortOL(list *_list, int (*IsGreater)(const void *, const void *))
         left = _list->header->succ;
         while (left != right)
         {
-            if (IsGreater(left->_data, right->_data))
+            if (_list->IsGreater(left->_data, right->_data))
             {
                 right = right->pred;
                 NodeMoveBefore(left, right->succ);
@@ -258,13 +261,13 @@ void ListMergeSort(list *_list, int(*IsGreater)(const void * , const void *))
 }
 */
 
-void ListUniquifyOL(list *_list, int (*IsEqual)(const void *, const void *))
+void ListUniquifyOL(list *_list)
 {
     ListNode *left = _list->header->succ;
     ListNode *right = left->succ;
     while (right->succ)
     {
-        if (IsEqual(left->_data, right->_data))
+        if (_list->IsEqual(left->_data, right->_data))
         {
             ListNode *temp = right->succ;
             NodeDecouple(right);

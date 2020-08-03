@@ -3,7 +3,7 @@
 stack StackCreate(int DataSize)
 {
     stack new;
-    new._vector = VecCreate(DataSize);
+    new._vector = VecCreate(DataSize, NULL, NULL);
     return new;
 }
 

@@ -1,11 +1,13 @@
 #include "vector.h"
 
-vector VecCreate(int DataSize)
+vector VecCreate(int DataSize,int (*IsEqual)(const void *, const void *),int (*IsGreater)(const void *, const void *) )
 {
     vector new ={
         ._size =0,
         ._DataSize =DataSize,
-        ._capacity = 5
+        ._capacity = 5,
+        .IsEqual = IsEqual,
+        .IsGreater = IsGreater
     };
 
     new._data = malloc(new._DataSize * new._capacity);
@@ -25,9 +27,9 @@ static void VecExtend(vector *_vector)
     }
 }
 
-vector VecCreateWithPtr(int DataSize, const void *old_ptr, int size)
+vector VecCreateWithPtr(int DataSize, const void *old_ptr, int size ,int (*IsEqual)(const void *, const void *),int (*IsGreater)(const void *, const void *))
 {
-    vector new = VecCreate(DataSize);
+    vector new = VecCreate(DataSize, IsEqual, IsGreater);
     new._size = size;
     VecExtend(&new);
     memcpy(new._data, old_ptr, new._DataSize * size);
@@ -129,25 +131,25 @@ int VecFind(const vector *_vector, const void *target)
     return VecFindBetween(_vector, target, 0, _vector->_size);
 }
 
-int VecFindOL(const vector *_vector, const void *target, int (*IsEqual)(const void *, const void *))
+int VecFindOL(const vector *_vector, const void *target)
 {
     int hi = _vector->_size - 1;
-    while ((-1 < hi) && !IsEqual(target, VecGet_(_vector, hi)))
+    while ((-1 < hi) && !_vector->IsEqual(target, VecGet_(_vector, hi)))
         hi -= 1;
     return hi;
 }
 
-int VecDisorderedOL(const vector *_vector, int (*IsGreater)(const void *, const void *))
+int VecDisorderedOL(const vector *_vector)
 {
     int n = 0;
     for (int i = 1; i < _vector->_size; i++)
     {
-        n += IsGreater(VecGet_(_vector, (i - 1)), VecGet_(_vector, i));
+        n += _vector->IsGreater(VecGet_(_vector, (i - 1)), VecGet_(_vector, i));
     }
     return n;
 }
 
-void VecSelectionSortOL(vector *_vector, int (*IsGreater)(const void *left, const void *right))
+void VecSelectionSortOL(vector *_vector)
 {
     int i, j, min;
 
@@ -156,7 +158,7 @@ void VecSelectionSortOL(vector *_vector, int (*IsGreater)(const void *left, cons
         min = i;
         for (j = i + 1; j < _vector->_size; j++)
         {
-            if (IsGreater(VecGet_(_vector, min), VecGet_(_vector, j)))
+            if (_vector->IsGreater(VecGet_(_vector, min), VecGet_(_vector, j)))
                 min = j;
         }
         if (min != i)
@@ -168,16 +170,16 @@ void VecSelectionSortOL(vector *_vector, int (*IsGreater)(const void *left, cons
     }
 }
 
-static void merge(vector *_vector, int lo, int mi, int hi, int (*IsGreater)(const void *, const void *))
+static void merge(vector *_vector, int lo, int mi, int hi)
 {
     void *arr__ = malloc(_vector->_DataSize * (hi - lo));
     for (int i = lo, j = mi, k = 0; (i < mi || j < hi);)
     {
-        if (i < mi && (j >= hi || !IsGreater(VecGet_(_vector, i), VecGet_(_vector, j))))
+        if (i < mi && (j >= hi || !_vector->IsGreater(VecGet_(_vector, i), VecGet_(_vector, j))))
         {
             memcpy((void *)arr__ + _vector->_DataSize * k++, VecGet_(_vector, i++), _vector->_DataSize);
         }
-        if (j < hi && (i >= mi || IsGreater(VecGet_(_vector, i), VecGet_(_vector, j))))
+        if (j < hi && (i >= mi || _vector->IsGreater(VecGet_(_vector, i), VecGet_(_vector, j))))
         {
             memcpy((void *)arr__ + _vector->_DataSize * k++, VecGet_(_vector, j++), _vector->_DataSize);
         }
@@ -185,37 +187,37 @@ static void merge(vector *_vector, int lo, int mi, int hi, int (*IsGreater)(cons
     memcpy(VecGet_(_vector, lo), arr__, (hi - lo) * _vector->_DataSize);
     free(arr__);
 }
-static void VecMergeSort(vector *_vector, int lo, int hi, int (*IsGreater)(const void *, const void *))
+static void VecMergeSort(vector *_vector, int lo, int hi)
 {
     if (lo + 2 > hi)
         return;
     int mi = (lo + hi) >> 1;
-    VecMergeSort(_vector, lo, mi, IsGreater);
-    VecMergeSort(_vector, mi, hi, IsGreater);
-    merge(_vector, lo, mi, hi, IsGreater);
+    VecMergeSort(_vector, lo, mi);
+    VecMergeSort(_vector, mi, hi);
+    merge(_vector, lo, mi, hi);
 }
 
-void VecMergeSortOL(vector *_vector, int (*IsGreater)(const void *, const void *))
+void VecMergeSortOL(vector *_vector)
 {
-    VecMergeSort(_vector, 0, _vector->_size, IsGreater);
+    VecMergeSort(_vector, 0, _vector->_size);
 }
 
-void VecSortOL(vector *_vector, int (*IsGreater)(const void *, const void *))
+void VecSortOL(vector *_vector)
 {
     if (rand() % 2)
-        VecMergeSortOL(_vector, IsGreater);
+        VecMergeSortOL(_vector);
     else
-        VecSelectionSortOL(_vector, IsGreater);
+        VecSelectionSortOL(_vector);
 }
 
-int VecSearchOL(const vector *_vector, const void *target, int (*IsGreater)(const void *, const void *))
+int VecSearchOL(const vector *_vector, const void *target)
 {
     int lo = 0;
     int hi = _vector->_size;
     while (lo < hi)
     {
         int mi = (hi + lo) >> 1;
-        if (IsGreater(VecGet_(_vector, mi), target))
+        if (_vector->IsGreater(VecGet_(_vector, mi), target))
             hi = mi;
         else
             lo = ++mi;

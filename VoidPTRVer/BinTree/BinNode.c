@@ -137,6 +137,18 @@ void BNodeTravInI(BinNode *_BinNode, void (*callback)(void *))
     StackDestruct(&S);
 }
 
+BinNode *BNodeSucc(BinNode *_BinNode) 
+{
+    if(!_BinNode->_rChild)return NULL;
+    BinNode * temp = _BinNode->_rChild;
+    while(temp->_lChild)
+    {
+        temp = temp->_lChild;
+    }
+    return temp;
+}
+
+
 void BNodeTravLevelI(BinNode *_BinNode, void (*callback)(void *))
 {
     queue Q = QueueCreate(sizeof(BinNode *));
@@ -199,8 +211,39 @@ void BNodeTravPostI(BinNode *_BinNode, void (*callback)(void *))
     StackDestruct(&S2);
 }
 
+
+
+vector BNodeLinVect(BinNode * _BinNode)
+{
+    vector V = VecCreate(sizeof(BinNode *), NULL, NULL);
+    stack S = StackCreate(sizeof(BinNode *));
+    BinNode * temp;
+    while (1)
+    {
+        goAlongLeftBranch(_BinNode, &S);
+        if (StackEmpty(&S))
+            break;
+        temp = _BinNode = BNodePTR StackPop(&S);
+        VecPushBack(&V, &temp);
+        _BinNode = _BinNode->_rChild;
+    }
+    StackDestruct(&S);
+    return V;
+}
+
+
 void BNodeDestruct(BinNode *_BinNode)
 {
     free(_BinNode->_data);
     free(_BinNode);
+}
+
+void BNodeDestructAll(BinNode *_BinNode)
+{
+    vector V = BNodeLinVect(_BinNode);
+    while(VecSize(&V))
+    {
+        BNodeDestruct(BNodePTR VecPopBack(&V));
+    }
+    VecDestruct(&V);
 }

@@ -37,10 +37,12 @@ typedef struct vector //core structrue
     int _capacity;
     int _DataSize;
     void *_data;
+    int (*IsGreater)(const void *, const void *);
+    int (*IsEqual)(const void *, const void *);
 } vector;
 
-vector VecCreate(int DataSize);
-vector VecCreateWithPtr(int DataSize, const void *old_ptr, int size);
+vector VecCreate(int DataSize,int (*IsEqual)(const void *, const void *),int (*IsGreater)(const void *, const void *) );
+vector VecCreateWithPtr(int DataSize, const void *old_ptr, int size, int (*IsEqual)(const void *, const void *),int (*IsGreater)(const void *, const void *));
 #define VecSize(VecPTR) ((VecPTR)->_size)
 void *VecGet(const vector *_vector, int rank);
 
@@ -59,12 +61,12 @@ int VecFind(const vector *_vector, const void *target);
 int VecFindBetween(const vector *_vector, const void *target, int start_rank, int end_rank);
 
 /*function used when involes in comparison overload*/
-int VecDisorderedOL(const vector *_vector, int (*IsGreater)(const void *, const void *));
-void VecSortOL(vector *_vector, int (*IsGreater)(const void *, const void *));
-void VecMergeSortOL(vector *_vector, int (*IsGreater)(const void *, const void *));
-void VecSelectionSortOL(vector *_vector, int (*IsGreater)(const void *, const void *));
-int VecFindOL(const vector *_vector, const void *target, int (*IsEqual)(const void *, const void *));
-int VecSearchOL(const vector *_vector, const void *target, int (*IsGreater)(const void *, const void *));
-int VecUniquifyOL(vector *_vector, int (*IsEqual)(const void *, const void *));
+int VecDisorderedOL(const vector *_vector);
+void VecSortOL(vector *_vector);
+void VecMergeSortOL(vector *_vector);
+void VecSelectionSortOL(vector *_vector);
+int VecFindOL(const vector *_vector, const void *target);
+int VecSearchOL(const vector *_vector, const void *target);
+int VecUniquifyOL(vector *_vector);
 
 #endif /*VECTOR_H*/

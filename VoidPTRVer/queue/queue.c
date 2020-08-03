@@ -3,7 +3,7 @@
 queue QueueCreate(int DataSize)
 {
     queue new;
-    new._list = ListCreate(DataSize);
+    new._list = ListCreate(DataSize, NULL, NULL);
     return new;
 
 }

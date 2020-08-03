@@ -32,7 +32,7 @@ int DoubleIsGreater(const void *left, const void *right)
 
 void print(void *a)
 {
-    int b = *(int *)a;
+    int b = *(int *)  (*(BinNode **)a)->_data;
     printf("num is : %i\n", b);
 }
 
@@ -48,5 +48,6 @@ int main()
     BNodeInsertAsLC(minus2, &i, 4);
     i = -1;
     BNodeInsertAsRC(minus2, &i, 4);
-    BNodeTravLevelR(root, print);
+    vector V = BNodeLinVect(root);
+    VecTraverse(&V, print);
 }
