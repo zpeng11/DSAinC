@@ -39,9 +39,7 @@ BinNode *AVLInseart(AVL *_BST, const void *key, const void *value)
     {
         if (!Balanced(g))
         {
-            BinNode *temp = *FromParentTo(g);
-            temp = tallerChild(tallerChild(g));
-            *FromParentTo(g) = BSTRotateAt(temp);
+            *FromParentTo(g) = BSTRotateAt(tallerChild(tallerChild(g)));
             break;
         }
         else
@@ -55,7 +53,6 @@ BinNode *AVLInseart(AVL *_BST, const void *key, const void *value)
 int AVLRemove(AVL *_BST, const void *key)
 {
     BinNode *x = AVLSearch(_BST, key);
-    BinNode *temp;
     if (!x)
         return 0;
     BSTRemove(_BST, key);
@@ -64,9 +61,7 @@ int AVLRemove(AVL *_BST, const void *key)
     {
         if (!Balanced(g))
         {
-            temp = tallerChild(g);
-            temp = tallerChild(temp);
-            g = *FromParentTo(g) = BSTRotateAt(temp);
+            g = *FromParentTo(g) = BSTRotateAt(tallerChild(tallerChild(g)));
             BTreeUpdatHeight(g);
         }
     }
