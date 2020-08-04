@@ -1,18 +1,43 @@
 #include "BST.h"
 #define KeyPtr(nodePTR) ((*(entry *)((nodePTR)->_data)).key)
 #define ENTRY *(entry *)
+#define Key(nodePTR) *(int *)((*(entry *)((nodePTR)->_data)).key)
+#define IsLChild(nodePTR) ((nodePTR)->_parent->_lChild == (nodePTR))
+#define IsRChild(nodePTR) ((nodePTR)->_parent->_rChild == (nodePTR))
+#define lc(BNodePTR) ((BNodePTR)->_lChild)
+#define rc(BNodePTR) ((BNodePTR)->_rChild)
+#define stature(p) ((p) ? (p)->_height : -1)
+#define max(a, b) (((a) > (b)) ? (a) : (b))
+#define balfac(nodePTR) (stature(lc(nodePTR)) - stature(rc(nodePTR)))
+#define Balanced(nodePTR) ((-2 < balfac(nodePTR)) && (balfac(nodePTR) < 2))
+#define KeyPtr(nodePTR) ((*(entry *)((nodePTR)->_data)).key)
+#define tallerChild(nodePTR) (((stature(lc(nodePTR))) >(stature(rc(nodePTR))) )? lc(nodePTR):rc(nodePTR))
+#define FromParentTo(nodePTR) ((lc((nodePTR)->_parent) == (nodePTR))?  (&(lc((nodePTR)->_parent))) : (&(rc((nodePTR)->_parent))) )
 
-BST BSTCreate(int KeyDataSize, int ValueDataSize, int (* KetIsEqual)(const void *, const void *),int (* KeyIsGreater)(const void * ,const void *) )
+
+BST BSTCreate(int KeyDataSize, int ValueDataSize, int (*KetIsEqual)(const void *, const void *), int (*KeyIsGreater)(const void *, const void *))
 {
-    BST new = {.KetIsEqual= KetIsEqual,
+    BST new = {.KetIsEqual = KetIsEqual,
                .KeyIsGreater = KeyIsGreater,
                ._hot = NULL,
                ._KeyDataSize = KeyDataSize,
                ._ValueDataSize = ValueDataSize,
                ._BinTree._DataSize = sizeof(entry),
                ._BinTree._root = NULL,
-               ._BinTree._size = 0 };
+               ._BinTree._size = 0};
     return new;
+}
+
+void BSTDestruct(BST *_BST)
+{
+    vector v = BNodeLinVect(_BST->_BinTree._root);
+    BinNode *temp;
+    while (VecSize(&v))
+    {
+        temp = *(BinNode **)VecPopBack(&v);
+        EntryDestruct(temp->_data);
+        BNodeDestruct(temp);
+    }
 }
 
 BinNode *SearchIn(BST *_BST, BinNode *v, const void *KeyTarget)
@@ -49,7 +74,7 @@ BinNode *BSTInseart(BST *_BST, const void *key, const void *value)
 {
     BinNode *temp = BSTSearch(_BST, key);
     if (temp)
-        return NULL;
+        return temp;
     _BST->_BinTree._size += 1;
     entry NewEntry = EntryCreate(key, _BST->_KeyDataSize, value, _BST->_ValueDataSize);
     if (_BST->_BinTree._size == 1)
@@ -67,17 +92,17 @@ BinNode *BSTInseart(BST *_BST, const void *key, const void *value)
     return temp;
 }
 
-BinNode * removeAt(BinNode *x, BinNode **hot)
+BinNode *BSTRemoveAt(BinNode *x, BinNode **hot)
 {
     BinNode *w = x;
     BinNode *succ = NULL;
-    if (!x->_lChild){
+    if (!x->_lChild)
+    {
         succ = x = x->_rChild;
-        w->_parent->_rChild = succ;
     }
-    else if (!x->_rChild){
+    else if (!x->_rChild)
+    {
         succ = x = x->_lChild;
-        w->_parent->_lChild = succ;
     }
     else
     {
@@ -91,9 +116,10 @@ BinNode * removeAt(BinNode *x, BinNode **hot)
         else
             u->_lChild = succ = w->_rChild;
     }
-     *hot = w->_parent;
+    *hot = w->_parent;
     if (succ)
         succ->_parent = *hot;
+    *FromParentTo(w) = succ;
     EntryDestruct(w->_data);
     BNodeDestruct(w);
     return succ;
@@ -104,8 +130,67 @@ int BSTRemove(BST *_BST, const void *key)
     BinNode *node_2_remove = BSTSearch(_BST, key);
     if (!node_2_remove)
         return 0;
-    removeAt(node_2_remove, &(_BST->_hot));
+    BSTRemoveAt(node_2_remove, &(_BST->_hot));
     _BST->_BinTree._size -= 1;
     BTreeUpdateHeightAbove(_BST->_hot);
     return 1;
+}
+
+BinNode *BSTConnect34(BinNode *a, BinNode *b, BinNode *c, BinNode *T0, BinNode *T1, BinNode *T2, BinNode *T3)
+{
+    a->_lChild = T0;
+    if (T0)
+        T0->_parent = a;
+    a->_rChild = T1;
+    if (T1)
+        T1->_parent = a;
+    BTreeUpdatHeight(a);
+    c->_lChild = T2;
+    if (T2)
+        T2->_parent = c;
+    c->_rChild = T3;
+    if (T3)
+        T3->_parent = c;
+    BTreeUpdatHeight(c);
+    b->_lChild = a;
+    a->_parent = b;
+    b->_rChild = c;
+    c->_parent = b;
+    BTreeUpdatHeight(b);
+    return b;
+}
+
+
+BinNode * BSTRotateAt(BinNode *v)
+{
+    BinNode * p =  v->_parent;
+    BinNode * g =  p->_parent;
+    if(IsLChild(p))
+    {
+        if(IsLChild(v))
+        {
+            p->_parent = g->_parent;
+            return BSTConnect34(v,p,g,lc(v), rc(v), rc(p),rc(g));
+        }
+        else
+        {
+            v->_parent = g->_parent;
+            return BSTConnect34(p, v, g, lc(p), lc(v), rc(v), rc(g));
+        }
+    }
+    else
+    {
+        if(IsLChild(v))
+        {
+            v->_parent = g->_parent;
+            return BSTConnect34(g,v,p, lc(g), lc(v), rc(v), rc(p));
+        }
+        else
+        {
+            p->_parent = g->_parent;
+            return BSTConnect34(g, p, v, lc(g), lc(p), lc(v), rc(v));
+        }
+        
+    }
+    
 }

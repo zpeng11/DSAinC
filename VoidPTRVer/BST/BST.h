@@ -8,6 +8,8 @@ typedef struct entry
     void * key;
     void * value;
 }entry;
+entry EntryCreate(const void *key, int KeyDataSize, const void *value, int ValueDataSize);
+void EntryDestruct(entry *_entry);
 
 typedef struct BST
 {
@@ -24,6 +26,7 @@ void BSTDestruct(BST * _BST);
 
 BinNode * BSTSearch(BST * _BST, const void * KeyTarget);
 BinNode * BSTInseart(BST *_BST, const void * Key, const void * value);
+BinNode * BSTRemoveAt(BinNode *x, BinNode **hot);
 int BSTRemove(BST * _BST, const void * key);
 BinNode * BSTConnect34(BinNode * , BinNode *, BinNode *, BinNode *, BinNode *, BinNode *, BinNode *);
 BinNode * BSTRotateAt(BinNode *);

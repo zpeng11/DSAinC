@@ -5,6 +5,7 @@
 #include "BinNode.h"
 #include "BinTree.h"
 #include "BST.h"
+#include "AVL.h"
 
 #include <stdio.h>
 
@@ -36,33 +37,48 @@ void print(void *a)
     int b = *(int *)  (*(BinNode **)a)->_data;
     printf("num is : %i\n", b);
 }
-#define Key(nodePTR) *(int *)((*(entry *)((nodePTR)->_data)).key) 
+#define Key(nodePTR) (*(int *)((*(entry *)((nodePTR)->_data)).key))
+#define lc(BNodePTR) ((BNodePTR)->_lChild)
+#define rc(BNodePTR) ((BNodePTR)->_rChild)
+#define stature(p) ((p) ? (p)->_height : -1)
+#define max(a, b) (((a) > (b)) ? (a) : (b))
+#define balfac(nodePTR) (stature(lc(nodePTR)) - stature(rc(nodePTR)))
+#define Balanced(nodePTR) ((-2 < balfac(nodePTR)) && (balfac(nodePTR) < 2))
+#define KeyPtr(nodePTR) ((*(entry *)((nodePTR)->_data)).key)
+#define tallerChild(nodePTR) (((stature(lc(nodePTR))) >(stature(rc(nodePTR))) )? lc(nodePTR):rc(nodePTR))
+#define FromParentTo(nodePTR) ((lc((nodePTR)->_parent) == (nodePTR))?  (&(lc((nodePTR)->_parent))) : (&(rc((nodePTR)->_parent))) )
+
+
 int main()
 {
     BST b = BSTCreate(sizeof(int), sizeof(double), IntIsEqual, IntIsGreater);
     int k = 0;
     double v = 34.73352;
-    BSTInseart(&b, &k, &v);
+    AVLInseart(&b, &k, &v);
     k = -1;
-    BSTInseart(&b, &k, &v);
+    AVLInseart(&b, &k, &v);
     k = 5;
-    BSTInseart(&b, &k, &v);
+    AVLInseart(&b, &k, &v);
     k = -3;
-    BSTInseart(&b, &k, &v);
+    AVLInseart(&b, &k, &v);
     k = 3;
-    BSTInseart(&b, &k, &v);
+    AVLInseart(&b, &k, &v);
     k = 7;
-    BSTInseart(&b, &k, &v);
+    AVLInseart(&b, &k, &v);
     k = -8;
-    BSTInseart(&b, &k, &v);
+    AVLInseart(&b, &k, &v);
     k = -9;
-    BSTInseart(&b, &k, &v);
+    AVLInseart(&b, &k, &v);
     k = -5;
-    BSTInseart(&b, &k, &v);
+    AVLInseart(&b, &k, &v);
     k = -4;
-    BSTInseart(&b, &k, &v);
-    k = -1;
-    BSTRemove(&b, &k);
+    AVLInseart(&b, &k, &v);
+    k = 3;
+    AVLRemove(&b, &k);
+    k = 7;
+    AVLRemove(&b, &k);
+    printf("%i", Key(*FromParentTo(tallerChild(b._BinTree._root))));
+    BSTDestruct(&b);
 
 
 
