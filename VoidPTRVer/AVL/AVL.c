@@ -13,33 +13,19 @@
 
 BinNode *AVLInseart(AVL *_BST, const void *key, const void *value)
 {
-    BinNode *x = BSTSearch(_BST, key);
-    if (x)
-        return x;
+    BinNode **x = BSTSearch(_BST, key);
+    if (*x)
+        return *x;
     entry NewEntry = EntryCreate(key, _BST->_KeyDataSize, value, _BST->_ValueDataSize);
-    if (_BST->_BinTree._size == 0)
-    {
-        x = _BST->_BinTree._root = BNodeCreate(&NewEntry, sizeof(entry));
-    }
-    else
-    {
-        if (_BST->KeyIsGreater(KeyPtr(_BST->_hot), key))
-        {
-            _BST->_hot->_lChild = x = BNodeCreate(&NewEntry, sizeof(entry));
-        }
-        else
-        {
-            _BST->_hot->_rChild = x = BNodeCreate(&NewEntry, sizeof(entry));
-        }
-    }
+    *x = BNodeCreate(&NewEntry, sizeof(entry));
     _BST->_BinTree._size += 1;
-    x->_parent = _BST->_hot;
+    (*x)->_parent = _BST->_hot;
     BinNode *g;
-    for (g = x->_parent; g; g = g->_parent)
+    for (g = (*x)->_parent; g; g = g->_parent)
     {
         if (!Balanced(g))
         {
-            *FromParentTo(g) = BSTRotateAt(tallerChild(tallerChild(g)));
+            *FromParentTo(g) = BSTRotateAt(tallerChild(tallerChild(g)),BTreeUpdatHeight);
             break;
         }
         else
@@ -47,13 +33,13 @@ BinNode *AVLInseart(AVL *_BST, const void *key, const void *value)
             BTreeUpdatHeight(g);
         }
     }
-    return x;
+    return *x;
 }
 
 int AVLRemove(AVL *_BST, const void *key)
 {
-    BinNode *x = AVLSearch(_BST, key);
-    if (!x)
+    BinNode **x = AVLSearch(_BST, key);
+    if (!(*x))
         return 0;
     BSTRemove(_BST, key);
     BinNode *g;
@@ -61,7 +47,7 @@ int AVLRemove(AVL *_BST, const void *key)
     {
         if (!Balanced(g))
         {
-            g = *FromParentTo(g) = BSTRotateAt(tallerChild(tallerChild(g)));
+            g = *FromParentTo(g) = BSTRotateAt(tallerChild(tallerChild(g)),BTreeUpdatHeight);
             BTreeUpdatHeight(g);
         }
     }

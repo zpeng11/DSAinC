@@ -13,7 +13,7 @@ BinNode *BNodeCreate(const void *input, int DataSize)
     ptr->_parent = NULL;
     ptr->_rChild = NULL;
     ptr->_lChild = NULL;
-    ptr->_color = 0;
+    ptr->_color = 0;//create as Red 0
     ptr->_npl = 0;
     ptr->_height = 0;
     return ptr;

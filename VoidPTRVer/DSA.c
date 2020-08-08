@@ -52,32 +52,8 @@ void print(void *a)
 int main()
 {
     BST b = BSTCreate(sizeof(int), sizeof(double), IntIsEqual, IntIsGreater);
-    int k = 0;
-    double v = 34.73352;
-    AVLInseart(&b, &k, &v);
-    k = -1;
-    AVLInseart(&b, &k, &v);
-    k = 5;
-    AVLInseart(&b, &k, &v);
-    k = -3;
-    AVLInseart(&b, &k, &v);
-    k = 3;
-    AVLInseart(&b, &k, &v);
-    k = 7;
-    AVLInseart(&b, &k, &v);
-    k = -8;
-    AVLInseart(&b, &k, &v);
-    k = -9;
-    AVLInseart(&b, &k, &v);
-    k = -5;
-    AVLInseart(&b, &k, &v);
-    k = -4;
-    AVLInseart(&b, &k, &v);
-    k = 3;
-    AVLRemove(&b, &k);
-    k = 7;
-    AVLRemove(&b, &k);
-    printf("%i", Key(*FromParentTo(tallerChild(b._BinTree._root))));
+    int k = 1;
+    BinNode ** p = BSTSearch(&b,&k );
     BSTDestruct(&b);
 
 
