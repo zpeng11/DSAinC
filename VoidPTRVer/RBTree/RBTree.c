@@ -116,7 +116,7 @@ void solveDoubleBlack(RBT *_RBT, int xColor, BinNode *r)
                     lc(*FromParentToP)->_color = rc(*FromParentToP)->_color = B;
                     RBTUpdateHeight(lc(*FromParentToP));
                     RBTUpdateHeight(rc(*FromParentToP));
-                    (*FromParentToP)->_color = R;
+                    (*FromParentToP)->_color = pColor;
                     RBTUpdateHeight(*FromParentToP);
                     break;
                 }
@@ -158,6 +158,8 @@ void solveDoubleBlack(RBT *_RBT, int xColor, BinNode *r)
                      p->_parent = s;
                      s->_rChild = p;
                  }
+                 RBTUpdateHeight(p);
+                 RBTUpdateHeight(s);
             }//go to next iteration
         }
         //end of one iteration 
