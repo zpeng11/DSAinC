@@ -16,7 +16,7 @@ const void *StackPop(stack *_stack)
     return VecPopBack(((vector *)_stack));
 }
 
-const void *StackTop(stack *_stack)
+void *StackTop(stack *_stack)
 {
     return VecGet(((vector *)_stack), _stack->_vector._size - 1);
 }

@@ -22,12 +22,12 @@ const void * QueueDequeue(queue *_queue)
     return ListRemove((list *)_queue, 0);
 }
 
-const void * QueueRear(queue *_queue)
+void * QueueRear(queue *_queue)
 {
     return ListGet((list *)_queue, QueueSize(_queue)-1);
 }
 
-const void * QueueFront(queue *_queue)
+void * QueueFront(queue *_queue)
 {
     return ListGet((list *)_queue, 0);
 }

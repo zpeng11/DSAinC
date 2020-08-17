@@ -133,7 +133,7 @@ void HeapDelMax(heap *_heap)
     ENTRY HeapGet(_heap->_vector._size - 1) = temp;
     EntryDestruct(HeapGet(_heap->_vector._size - 1));
     VecPopBack(&(_heap->_vector));
-    percolateDown(_heap, _heap->_vector._size, 0);
+    percolateDown(_heap, 0);
 }
 
 

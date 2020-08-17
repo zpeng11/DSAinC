@@ -18,14 +18,14 @@ ListNode *NodeCreate(int DataSize)
     return ptr;
 }
 
-ListNode *NodeCreateWithPtr(int DataSize, const void *input_ptr)
+ListNode *NodeCreateWithPtr(int DataSize, const void *input_ptr)//create a node with input ptr
 {
     ListNode *ptr = NodeCreate(DataSize);
     memcpy(ptr->_data, input_ptr, DataSize);
     return ptr;
 }
 
-ListNode *NodeGet(list *_list, int position)
+ListNode *NodeGet(list *_list, int position)// get a ptr to a node in a list
 {
     if (!(0 <= position && position < _list->_size))
     {
@@ -51,7 +51,7 @@ ListNode *NodeGet(list *_list, int position)
     return ptr;
 }
 
-void NodeInsertBefore(ListNode *old, ListNode *new)
+void NodeInsertBefore(ListNode *old, ListNode *new)//insert an node before another
 {
     new->pred = old->pred;
     new->succ = old;
@@ -59,7 +59,7 @@ void NodeInsertBefore(ListNode *old, ListNode *new)
     old->pred = new;
 }
 
-void NodeInsertAfter(ListNode *old, ListNode *new)
+void NodeInsertAfter(ListNode *old, ListNode *new)//insert an node after another
 {
     new->pred = old;
     new->succ = old->succ;
@@ -67,7 +67,7 @@ void NodeInsertAfter(ListNode *old, ListNode *new)
     old->succ = new;
 }
 
-void NodeDecouple(ListNode *node)
+void NodeDecouple(ListNode *node)// disconnect a node from its pre and succ
 {
     if (node->pred)
     {
@@ -79,7 +79,7 @@ void NodeDecouple(ListNode *node)
     }
 }
 
-void NodeMoveBefore(ListNode *Dst, ListNode *Src)
+void NodeMoveBefore(ListNode *Dst, ListNode *Src)// move a node 
 {
     NodeDecouple(Src);
     NodeInsertBefore(Dst, Src);

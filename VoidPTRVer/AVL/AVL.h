@@ -7,6 +7,6 @@
 #define AVLCreate BSTCreate
 #define AVLDestruct BSTDestruct
 #define AVLSearch BSTSearch
-BinNode * AVLInseart(AVL *_BST, const void * Key, const void * value);
-int AVLRemove(AVL * _BST, const void * key);
+BinNode * AVLInseart(AVL *_BST, const void * Key, const void * value);//overloaded insert
+int AVLRemove(AVL * _BST, const void * key);//overloaded remove
 #endif /*AVL_H*/
