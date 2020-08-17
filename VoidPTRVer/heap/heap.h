@@ -11,8 +11,8 @@ typedef struct  heap
     int ValueDataSize;
 }heap;
 
-
 heap HeapCreate(int KeyDataSize, int ValueDataSize, int (* KetIsEqual)(const void *, const void *),int (* KeyIsGreater)(const void * ,const void *) );
+heap HeapBatchCreate(entry * Old_Ptr, int size,  int KeyDataSize, int ValueDataSize, int (* KetIsEqual)(const void *, const void *),int (* KeyIsGreater)(const void * ,const void *));
 void HeapDestruct(heap *);
 void HeapInsert(heap * _heap, const void * key, const void * value);
 void * HeapGetMax(heap * _heap);

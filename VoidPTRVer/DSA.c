@@ -47,5 +47,5 @@ int DoubleIsGreater(const void *left, const void *right)
 
 int main()
 {
-    printf("%i", -1<<1);
+    printf("%i", 1);
 }

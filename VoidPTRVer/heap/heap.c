@@ -11,9 +11,9 @@
 #define IsGreater(const_void_ptr, const_void_ptr_) (_heap->_vector.IsGreater((const_void_ptr), (const_void_ptr_)))
 #define key_ptr(rank) ((ENTRY HeapGet(rank)).key)
 
-int percolateDown(heap *_heap, int n, int rank);
+int percolateDown(heap *_heap,  int rank);
 int percolateUp(heap *_heap, int rank);
-int heapify(heap *_heap, int rankn);
+int heapify(heap *_heap, int n);
 
 int percolateUp(heap *_heap, int rank)
 {
@@ -86,7 +86,7 @@ int ProperParent(heap *_heap, int parent)
     }
 }
 
-int percolateDown(heap *_heap, int n, int rank)
+int percolateDown(heap *_heap,  int rank)
 {
     int ParentRank;
     while (rank != (ParentRank = ProperParent(_heap, rank)))
@@ -134,4 +134,23 @@ void HeapDelMax(heap *_heap)
     EntryDestruct(HeapGet(_heap->_vector._size - 1));
     VecPopBack(&(_heap->_vector));
     percolateDown(_heap, _heap->_vector._size, 0);
+}
+
+
+heap HeapBatchCreate(entry * Old_Ptr, int size,  int KeyDataSize, int ValueDataSize, int (* KetIsEqual)(const void *, const void *),int (* KeyIsGreater)(const void * ,const void *))
+{
+    heap _heap;
+    _heap.KeyDataSize = KeyDataSize;
+    _heap.ValueDataSize = ValueDataSize;
+    _heap._vector = VecCreateWithPtr(sizeof(entry), Old_Ptr, size, KetIsEqual, KeyIsGreater);
+    heapify(&_heap, size-1);
+}
+
+
+int heapify(heap *_heap, int n)
+{
+    for(int i = n; i>0;i--)
+    {
+        percolateDown(_heap, i);
+    }
 }
