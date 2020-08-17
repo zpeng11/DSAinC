@@ -13,6 +13,7 @@ add_subdirectory(BinTree)
 add_subdirectory(BST)
 add_subdirectory(AVL)
 add_subdirectory(RBTree)
+add_subdirectory(heap)
 list(APPEND libs vector)
 list(APPEND libs stack)
 list(APPEND libs queue)
@@ -22,6 +23,8 @@ list(APPEND libs BinNode)
 list(APPEND libs BST)
 list(APPEND libs AVL)
 list(APPEND libs RBTree)
+list(APPEND libs heap)
+
 
 
 add_library(DSAinC DSA.c)
