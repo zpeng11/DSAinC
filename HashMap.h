@@ -1,6 +1,7 @@
 #ifndef HASH_MAP_H
 #define HASH_MAP_H
 #include <stdbool.h>
+#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
